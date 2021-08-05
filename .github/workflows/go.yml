@@ -1,0 +1,37 @@
+name: Tests
+
+on:
+  push:
+    paths:
+      - "**.go"
+      - go.mod
+      - go.sum
+  pull_request:
+    paths:
+      - "**.go"
+      - go.mod
+      - go.sum
+
+jobs:
+  test:
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        go: [1.16.x, 1.15.x] # when adding a newer latest, update it below too.
+    runs-on: ${{ matrix.os }}
+    name: Test
+    steps:
+
+    - name: Set up Go ${{ matrix.node }}
+      uses: actions/setup-go@v2
+      with:
+        go-version: ${{ matrix.go }}
+
+    - name: Check out code
+      uses: actions/checkout@v2
+
+    - name: Download dependencies
+      run: go mod download
+
+    - name: Test
+      run: go test -race ./...
